@@ -59,8 +59,8 @@ class OCREngine:
             # Single-pass image load & validation
             image = Image.open(io.BytesIO(image_bytes))
             
-            # Fast proportion-preserving downscale if image exceeds max dimension (1000px)
-            max_dim = 1000
+            # Fast proportion-preserving downscale if image exceeds max dimension (800px)
+            max_dim = 800
             w, h = image.size
             if max(w, h) > max_dim:
                 scale = max_dim / float(max(w, h))
