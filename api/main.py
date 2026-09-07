@@ -35,9 +35,11 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # Permits requests from Vite dev server and deployed frontend
+    allow_origin_regex=r"https://.*",  # Permits all HTTPS origins including Vercel preview domains
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"],
 )
 
 # Shared Core Pipeline Instances
