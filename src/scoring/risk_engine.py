@@ -63,6 +63,12 @@ class RiskEngine:
         # 2. Contextual Adjustment for Co-Occurring Signals
         contextual_adjustment = self._calculate_contextual_boost(triggered_signals, detection_result)
 
+        # Direct credential request floor: Any active credential disclosure request must reach at least MEDIUM risk (36.0/100)
+        if "credential_request" in triggered_signals:
+            min_credential_score = 36.0
+            if (base_score + contextual_adjustment) < min_credential_score:
+                contextual_adjustment = round(min_credential_score - base_score, 1)
+
         # 3. Calculate Final Clamped Score (0.0 to 100.0)
         unclamped_score = base_score + contextual_adjustment
         final_score = min(100.0, max(0.0, round(unclamped_score, 1)))
@@ -91,14 +97,21 @@ class RiskEngine:
         boost_per_signal = float(self.boost_config.get("boost_per_additional_signal", 5.0))
         max_boost = float(self.boost_config.get("max_contextual_boost", 15.0))
 
-        boost = 0.0
         triggered_count = len(triggered_signals)
 
-        # 1. Multi-signal co-occurrence boost
+        # Standalone direct credential request boost
+        # Ensures direct OTP/PIN disclosure requests reach MEDIUM risk (15.0 base + 21.0 boost = 36.0 pts)
+        if triggered_count == 1 and "credential_request" in triggered_signals:
+            has_urls = detection_result.metadata.get("has_urls", False)
+            return 26.0 if has_urls else 21.0
+
+        boost = 0.0
+
+        # Multi-signal co-occurrence boost
         if triggered_count >= min_triggered:
             boost += (triggered_count - 1) * boost_per_signal
 
-        # 2. Suspicious URL link context boost when combined with deception triggers
+        # Suspicious URL link context boost when combined with deception triggers
         has_urls = detection_result.metadata.get("has_urls", False)
         if has_urls and triggered_count >= 1:
             boost += 5.0

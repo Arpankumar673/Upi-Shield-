@@ -257,3 +257,70 @@ def test_part_f_8_isolated_otp_pin_mention():
     risk = risk_engine.calculate_risk(detector.analyze(processor.process(text)))
     assert risk.risk_level == RISK_LEVEL_LOW
 
+
+# --- URGENT CALIBRATION FIX TESTS (DIRECT OTP & CREDENTIAL DISCLOSURE) ---
+
+def test_direct_otp_sharing_request_medium_risk():
+    processor = TextProcessor()
+    detector = SignalDetector()
+    risk_engine = RiskEngine()
+    text = "Your account verification is pending. Share the 6-digit OTP you received to complete the verification process."
+    risk = risk_engine.calculate_risk(detector.analyze(processor.process(text)))
+
+    assert "credential_request" in risk.triggered_signals
+    assert risk.score >= 31.0
+    assert risk.risk_level in (RISK_LEVEL_MEDIUM, RISK_LEVEL_HIGH)
+
+
+def test_otp_informational_warning_low_risk():
+    processor = TextProcessor()
+    detector = SignalDetector()
+    risk_engine = RiskEngine()
+    text1 = "Never share your OTP with anyone."
+    risk1 = risk_engine.calculate_risk(detector.analyze(processor.process(text1)))
+
+    assert "credential_request" not in risk1.triggered_signals
+    assert risk1.score <= 30.0
+    assert risk1.risk_level == RISK_LEVEL_LOW
+
+    text2 = "Do not share your OTP with bank officials."
+    risk2 = risk_engine.calculate_risk(detector.analyze(processor.process(text2)))
+    assert risk2.risk_level == RISK_LEVEL_LOW
+
+
+def test_otp_plus_threat_medium_or_high_risk():
+    processor = TextProcessor()
+    detector = SignalDetector()
+    risk_engine = RiskEngine()
+    text = "Your UPI account will be blocked within 2 hours. Share the OTP to verify."
+    risk = risk_engine.calculate_risk(detector.analyze(processor.process(text)))
+
+    assert "threat" in risk.triggered_signals
+    assert "credential_request" in risk.triggered_signals
+    assert risk.risk_level in (RISK_LEVEL_MEDIUM, RISK_LEVEL_HIGH)
+
+
+def test_otp_plus_refund_high_risk():
+    processor = TextProcessor()
+    detector = SignalDetector()
+    risk_engine = RiskEngine()
+    text = "URGENT: Your refund of ₹4,999 is pending verification. Share your OTP to receive the refund."
+    risk = risk_engine.calculate_risk(detector.analyze(processor.process(text)))
+
+    assert "reward_manipulation" in risk.triggered_signals or "urgency" in risk.triggered_signals
+    assert "credential_request" in risk.triggered_signals
+    assert risk.risk_level in (RISK_LEVEL_MEDIUM, RISK_LEVEL_HIGH)
+
+
+def test_otp_plus_account_blocking_medium_or_high():
+    processor = TextProcessor()
+    detector = SignalDetector()
+    risk_engine = RiskEngine()
+    text = "Your UPI account will be blocked. Share the OTP to complete verification."
+    risk = risk_engine.calculate_risk(detector.analyze(processor.process(text)))
+
+    assert "threat" in risk.triggered_signals
+    assert "credential_request" in risk.triggered_signals
+    assert risk.risk_level in (RISK_LEVEL_MEDIUM, RISK_LEVEL_HIGH)
+
+

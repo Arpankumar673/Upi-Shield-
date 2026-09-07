@@ -114,6 +114,28 @@ class SignalDetector:
 
         # Contextual filtering for false-positives
         if rule.name == "credential_request":
+            # Check for informational / warning negation phrases (e.g., "never share your OTP", "do not share OTP")
+            import re
+            informational_patterns = [
+                r'\bnever\s+(?:share|tell|provide|disclose|give)\b',
+                r'\bdo\s+not\s+(?:share|tell|provide|disclose|give)\b',
+                r'\bdon\'t\s+(?:share|tell|provide|disclose|give)\b',
+                r'\bmat\s+(?:share|batao|dalo|bhejo)\b',
+                r'\bbank\s+(?:never|will\s+never)\s+(?:ask|request|call)\b',
+                r'\bno\s+one\s+from\s+.*?\s+will\s+ask\b',
+                r'\bcaution:?\s+never\s+share\b',
+                r'\bwarning:?\s+do\s+not\s+share\b',
+            ]
+            if any(re.search(pat, norm_text, re.IGNORECASE) for pat in informational_patterns):
+                return SignalScore(
+                    name=rule.name,
+                    display_name=rule.display_name,
+                    score=0.0,
+                    detected=False,
+                    evidence=[],
+                    reasons=["Informational security advice advising user not to share credentials"]
+                )
+
             # Require share/tell/enter verb or remote access tool to avoid flagging casual mentions of "PIN"
             has_credential_verb = any(
                 v in norm_text for v in [
