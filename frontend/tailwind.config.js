@@ -8,14 +8,10 @@ export default {
     extend: {
       colors: {
         brand: {
-          50: '#f0fdf4',
-          100: '#dcfce7',
-          500: '#22c55e',
-          600: '#16a34a',
-          900: '#14532d',
-        },
-        slateDark: '#0f172a',
-        cardDark: '#1e293b',
+          blue: '#1683F5',
+          navy: '#102A56',
+          lightBlue: '#F0F7FF',
+        }
       }
     },
   },

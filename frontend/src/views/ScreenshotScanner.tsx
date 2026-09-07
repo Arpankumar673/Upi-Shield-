@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Upload, FileImage, AlertCircle, Loader2, FileText, CheckCircle2, X } from 'lucide-react';
+import { Upload, FileImage, AlertCircle, Loader2, FileText, CheckCircle2, X, Image as ImageIcon } from 'lucide-react';
 import { analyzeImage } from '../api';
 import { ImageAnalysisResponse } from '../types';
 import { ThreatDashboard } from '../components/ThreatDashboard';
@@ -73,18 +73,22 @@ export default function ScreenshotScanner() {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Upload Zone */}
-      <div className="rounded-xl border border-slate-800 bg-slate-900/90 p-5 shadow-lg space-y-4">
-        <div>
-          <h2 className="text-sm font-semibold text-slate-200 mb-1">
-            Upload Scam SMS / Payment Screenshot
-          </h2>
-          <p className="text-xs text-slate-400">
-            Upload an image of a suspicious message or UPI payment notification for OCR extraction and threat analysis.
-          </p>
+    <div className="space-y-6 max-w-4xl mx-auto">
+      {/* Header Banner */}
+      <div className="bg-gradient-to-r from-blue-50 via-indigo-50/40 to-white rounded-3xl p-6 sm:p-8 border border-blue-100 shadow-sm text-left space-y-2">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100/70 border border-blue-200 text-blue-800 text-xs font-bold">
+          <ImageIcon className="w-3.5 h-3.5 text-blue-600" /> Screenshot OCR Analyzer
         </div>
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+          Upload a Screenshot to Check
+        </h1>
+        <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-medium">
+          Upload an image of a suspicious message, WhatsApp chat, or payment receipt to scan for scam signs.
+        </p>
+      </div>
 
+      {/* Upload Zone Card */}
+      <div className="rounded-2xl border border-slate-200/90 bg-white p-6 shadow-md space-y-4">
         <input
           ref={fileInputRef}
           type="file"
@@ -99,37 +103,37 @@ export default function ScreenshotScanner() {
             onDragOver={handleDragOver}
             onDrop={handleDrop}
             onClick={() => fileInputRef.current?.click()}
-            className="border-2 border-dashed border-slate-700 hover:border-emerald-500/60 rounded-xl p-8 text-center cursor-pointer transition duration-150 bg-slate-950/50 hover:bg-slate-900/50 group"
+            className="border-2 border-dashed border-blue-200 hover:border-blue-500 rounded-2xl p-8 text-center cursor-pointer transition duration-150 bg-blue-50/40 hover:bg-blue-50/70 group"
           >
-            <div className="mx-auto w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 group-hover:text-emerald-400 group-hover:scale-110 transition duration-150 mb-3">
+            <div className="mx-auto w-14 h-14 rounded-2xl bg-white flex items-center justify-center text-blue-600 shadow-sm group-hover:scale-105 transition duration-150 mb-3 border border-blue-100">
               <Upload className="w-6 h-6" />
             </div>
-            <p className="text-sm font-medium text-slate-300 group-hover:text-slate-100">
+            <p className="text-sm font-bold text-slate-900 group-hover:text-blue-600">
               Click to upload or drag & drop image here
             </p>
-            <p className="text-xs text-slate-500 mt-1">PNG, JPG, JPEG, WEBP (Max 10MB)</p>
+            <p className="text-xs text-slate-500 mt-1">Supports PNG, JPG, JPEG, WEBP (Max 10MB)</p>
           </div>
         ) : (
-          <div className="relative rounded-lg overflow-hidden border border-slate-800 bg-slate-950 p-4 flex flex-col sm:flex-row items-center gap-4">
+          <div className="relative rounded-xl overflow-hidden border border-slate-200 bg-slate-50 p-4 flex flex-col sm:flex-row items-center gap-4">
             <img
               src={imagePreview}
               alt="Screenshot Preview"
-              className="max-h-48 rounded object-contain border border-slate-800 bg-black/40"
+              className="max-h-48 rounded-lg object-contain border border-slate-200 bg-white shadow-xs"
             />
             <div className="flex-1 space-y-2 text-left w-full">
               <div className="flex items-center gap-2">
-                <FileImage className="w-4 h-4 text-emerald-400" />
-                <span className="text-sm font-semibold text-slate-200 truncate">
+                <FileImage className="w-4 h-4 text-blue-600" />
+                <span className="text-sm font-bold text-slate-900 truncate">
                   {selectedFile?.name}
                 </span>
               </div>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-slate-500">
                 Size: {selectedFile ? (selectedFile.size / 1024).toFixed(1) : 0} KB
               </p>
               <button
                 type="button"
                 onClick={handleClear}
-                className="text-xs text-rose-400 hover:text-rose-300 flex items-center gap-1 pt-1"
+                className="text-xs text-rose-600 hover:text-rose-700 font-semibold flex items-center gap-1 pt-1"
               >
                 <X className="w-3.5 h-3.5" /> Remove image
               </button>
@@ -138,8 +142,8 @@ export default function ScreenshotScanner() {
         )}
 
         {error && (
-          <div className="flex items-center gap-2 p-3 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-300 text-sm">
-            <AlertCircle className="w-4 h-4 shrink-0" />
+          <div className="flex items-center gap-2 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-medium">
+            <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
             <span>{error}</span>
           </div>
         )}
@@ -150,17 +154,17 @@ export default function ScreenshotScanner() {
               type="button"
               onClick={handleAnalyze}
               disabled={loading}
-              className="flex items-center gap-2 px-5 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold text-sm rounded-lg shadow-md hover:shadow-emerald-500/20 transition duration-150 disabled:opacity-50"
+              className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-xl shadow-md shadow-blue-500/20 transition duration-150 disabled:opacity-50"
             >
               {loading ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  Extracting OCR & Analyzing...
+                  Extracting Text & Scanning...
                 </>
               ) : (
                 <>
                   <Upload className="w-4 h-4" />
-                  Run OCR & Threat Scan
+                  Analyze Screenshot
                 </>
               )}
             </button>
@@ -172,31 +176,31 @@ export default function ScreenshotScanner() {
       {result && (
         <div className="space-y-6">
           {/* Extracted Text Box */}
-          <div className="rounded-xl border border-slate-800 bg-slate-900/80 p-4 space-y-2">
+          <div className="rounded-2xl border border-slate-200 bg-white p-5 space-y-2 shadow-sm">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <FileText className="w-4 h-4 text-emerald-400" />
-                <h3 className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
-                  Extracted OCR Text
+                <FileText className="w-4 h-4 text-blue-600" />
+                <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                  Extracted Screenshot Text
                 </h3>
               </div>
               <span
-                className={`text-[10px] font-mono px-2 py-0.5 rounded ${
+                className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full ${
                   result.ocr_success
-                    ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30'
-                    : 'bg-amber-500/10 text-amber-400 border border-amber-500/30'
+                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                    : 'bg-amber-50 text-amber-700 border border-amber-200'
                 }`}
               >
                 {result.ocr_success ? 'OCR Engine: Active' : 'OCR Engine: Unavailable / Fallback'}
               </span>
             </div>
 
-            <div className="p-3 rounded-lg bg-slate-950 border border-slate-800 text-xs text-slate-300 font-mono whitespace-pre-wrap">
+            <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 font-mono whitespace-pre-wrap leading-relaxed">
               {result.extracted_text || 'No text extracted from image.'}
             </div>
 
             {result.ocr_error && (
-              <p className="text-[11px] text-[amber-400] italic">Note: {result.ocr_error}</p>
+              <p className="text-xs text-amber-700 italic">Note: {result.ocr_error}</p>
             )}
           </div>
 

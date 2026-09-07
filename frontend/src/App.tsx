@@ -23,7 +23,7 @@ export default function App() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans flex flex-col selection:bg-emerald-500 selection:text-slate-950">
+    <div className="min-h-screen bg-[#F4F8FC] text-slate-900 font-sans flex flex-col selection:bg-blue-600 selection:text-white">
       <Header activeTab={activeTab} setActiveTab={setActiveTab} apiConnected={apiConnected} />
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
