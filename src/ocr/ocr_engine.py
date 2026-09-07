@@ -49,11 +49,21 @@ class OCREngine:
             )
 
         try:
+            # Single-pass image load & validation
             image = Image.open(io.BytesIO(image_bytes))
-            image.verify()  # Check image integrity
             
-            # Reopen after verify (Pillow verify requirement)
-            image = Image.open(io.BytesIO(image_bytes))
+            # Fast proportion-preserving downscale if image exceeds max dimension (1200px)
+            max_dim = 1200
+            w, h = image.size
+            if max(w, h) > max_dim:
+                scale = max_dim / float(max(w, h))
+                new_size = (int(w * scale), int(h * scale))
+                resample_filter = getattr(Image, "Resampling", Image).BILINEAR
+                image = image.resize(new_size, resample_filter)
+            
+            # Convert to grayscale to speed up Tesseract text segmentation
+            image = image.convert("L")
+
         except Exception:
             return OCRResult(
                 success=False,
@@ -67,9 +77,14 @@ class OCREngine:
             )
 
         try:
-            # Perform OCR in-memory
-            extracted_text = pytesseract.image_to_string(image)
+            # Perform optimized OCR in-memory using uniform block PSM 6
+            extracted_text = pytesseract.image_to_string(image, config="--psm 6")
             cleaned = extracted_text.strip()
+
+            # Fallback to default PSM if PSM 6 produced empty output
+            if not cleaned:
+                extracted_text = pytesseract.image_to_string(image)
+                cleaned = extracted_text.strip()
 
             if not cleaned:
                 return OCRResult(

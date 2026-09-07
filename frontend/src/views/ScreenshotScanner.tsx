@@ -44,20 +44,29 @@ export default function ScreenshotScanner() {
     }
   };
 
+  const [statusStep, setStatusStep] = useState<'reading' | 'analyzing'>('reading');
+
   const handleAnalyze = async () => {
-    if (!selectedFile) {
-      setError('Please select an image file first.');
+    if (!selectedFile || loading) {
+      if (!selectedFile) setError('Please select an image file first.');
       return;
     }
 
     setError(null);
     setLoading(true);
+    setStatusStep('reading');
+
+    const timer = setTimeout(() => {
+      setStatusStep('analyzing');
+    }, 900);
+
     try {
       const res = await analyzeImage(selectedFile);
       setResult(res);
     } catch (err: any) {
       setError(err.message || 'Failed to process screenshot OCR. Ensure backend is operational.');
     } finally {
+      clearTimeout(timer);
       setLoading(false);
     }
   };
@@ -133,7 +142,8 @@ export default function ScreenshotScanner() {
               <button
                 type="button"
                 onClick={handleClear}
-                className="text-xs text-rose-600 hover:text-rose-700 font-semibold flex items-center gap-1 pt-1"
+                disabled={loading}
+                className="text-xs text-rose-600 hover:text-rose-700 font-semibold flex items-center gap-1 pt-1 disabled:opacity-50"
               >
                 <X className="w-3.5 h-3.5" /> Remove image
               </button>
@@ -154,12 +164,12 @@ export default function ScreenshotScanner() {
               type="button"
               onClick={handleAnalyze}
               disabled={loading}
-              className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-xl shadow-md shadow-blue-500/20 transition duration-150 disabled:opacity-50"
+              className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-xl shadow-md shadow-blue-500/20 transition duration-150 disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
             >
               {loading ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  Extracting Text & Scanning...
+                  {statusStep === 'reading' ? 'Reading screenshot...' : 'Checking for scam signs...'}
                 </>
               ) : (
                 <>

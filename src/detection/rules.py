@@ -54,6 +54,7 @@ THREAT_RULE = CategoryRule(
         (r'\b(?:account (?:frozen|block|blocked|suspended|terminated)|sim (?:block|blocked|deactivat))\b', 0.7),
         (r'\b(?:legal action|police (?:fir|case)|court notice|prosecution|arrest|jail|police station)\b', 0.8),
         (r'\b(?:kaat diya|block ho|band ho|freeze ho)\s*(?:jayega|gaya|dengi)\b', 0.7),
+        (r'\b(?:unblock|unblocking)\s+(?:account|upi|vpa|service)\b', 0.7),
     ],
     secondary_patterns=[
         (r'\b(?:penalty|fine|permanent(?:ly)?|consequences|suspend)\b', 0.4),
@@ -89,6 +90,7 @@ PAYMENT_RULE = CategoryRule(
         (r'\b(?:pay|transfer|bhejo|deposit)\s+₹?\d+\s+(?:immediately|now|to avoid|turant)\b', 0.8),
         (r'\b(?:scan|pay through|transfer to)\s+(?:upi|qr|vpa|account)\b', 0.6),
         (r'\b(?:paise bhejo|turant pay karo|payment karo|bill pay karo)\b', 0.7),
+        (r'\b(?:pay|payment)\s+to\s+(?:unblock|avoid|prevent|verify)\b', 0.7),
     ],
     secondary_patterns=[
         (r'\b(?:outstanding|due|unpaid|bill amount|pending bill)\b', 0.4),
@@ -105,6 +107,8 @@ CREDENTIAL_RULE = CategoryRule(
         (r'\b(?:share|tell|enter|send|provide)\s+.*?\b(?:otp|pin|cvv|password)\b', 0.9),
         (r'\b(?:otp|pin)\s+(?:batao|share karo|dalo|enter karo)\b', 0.9),
         (r'\b(?:anydesk|teamviewer|quicksupport|screen share)\b', 0.9),
+        (r'\b(?:kyc|account|refund|upi)\s+verification\b', 0.7),
+        (r'\b(?:verify|verification)\s+(?:kyc|account|identity|details|security|refund)\b', 0.7),
     ],
     secondary_patterns=[
         (r'\b(?:verify|verification|authenticate)\s+(?:account|identity|details|security)\b', 0.4),
@@ -121,6 +125,7 @@ REWARD_RULE = CategoryRule(
         (r'\b(?:cashback|reward|refund|scratch card)\s+(?:of|worth)?\s*₹?\d+|\b₹?\d+[\d,]*\s+(?:cashback|reward|refund)\b', 0.6),
         (r'\b(?:cashback|reward|refund)\s+(?:mila|claim karo|expires|pending)\b', 0.6),
         (r'\b(?:click|link)\s+to\s+(?:claim|receive|get|collect)\b', 0.6),
+        (r'\b(?:refund|cashback|reward)\s+(?:verification|process|claim|payment|fee)\b', 0.7),
     ],
     secondary_patterns=[
         (r'\b(?:congratulations|congrats|lucky winner|selected)\b', 0.3),

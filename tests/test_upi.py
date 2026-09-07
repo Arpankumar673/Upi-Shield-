@@ -88,3 +88,64 @@ def test_normal_upi_uri_not_automatically_scam():
 
     assert risk.score <= 30.0
     assert risk.risk_level == "LOW"
+
+
+def test_suspicious_verification_upi_uri():
+    parser = UPIParser()
+    processor = TextProcessor()
+    detector = SignalDetector()
+    risk_engine = RiskEngine()
+
+    uri = "upi://pay?pa=kycupdate@upi&pn=KYC%20Verification&am=1999&cu=INR&tn=Urgent%20KYC%20verification"
+    intent_data = parser.parse_uri(uri)
+    assert intent_data.is_valid is True
+
+    context_text = intent_data.get_message_context()
+    processed = processor.process(context_text)
+    detection = detector.analyze(processed)
+    risk = risk_engine.calculate_risk(detection)
+
+    assert risk.score >= 31.0
+    assert risk.risk_level in ("MEDIUM", "HIGH")
+    assert any(sig in risk.triggered_signals for sig in ("urgency", "credential_request"))
+
+
+def test_refund_verification_upi_uri():
+    parser = UPIParser()
+    processor = TextProcessor()
+    detector = SignalDetector()
+    risk_engine = RiskEngine()
+
+    uri = "upi://pay?pa=refundverify@upi&pn=Refund%20Verification&am=4999&cu=INR"
+    intent_data = parser.parse_uri(uri)
+    assert intent_data.is_valid is True
+
+    context_text = intent_data.get_message_context()
+    processed = processor.process(context_text)
+    detection = detector.analyze(processed)
+    risk = risk_engine.calculate_risk(detection)
+
+    assert risk.score >= 31.0
+    assert risk.risk_level in ("MEDIUM", "HIGH")
+    assert any(sig in risk.triggered_signals for sig in ("credential_request", "reward_manipulation"))
+
+
+def test_account_block_prevention_upi_uri():
+    parser = UPIParser()
+    processor = TextProcessor()
+    detector = SignalDetector()
+    risk_engine = RiskEngine()
+
+    uri = "upi://pay?pa=support@upi&pn=Account%20Block%20Prevention&am=999&cu=INR&tn=Pay%20to%20unblock%20account"
+    intent_data = parser.parse_uri(uri)
+    assert intent_data.is_valid is True
+
+    context_text = intent_data.get_message_context()
+    processed = processor.process(context_text)
+    detection = detector.analyze(processed)
+    risk = risk_engine.calculate_risk(detection)
+
+    assert risk.score >= 31.0
+    assert risk.risk_level in ("MEDIUM", "HIGH")
+    assert any(sig in risk.triggered_signals for sig in ("threat", "payment_pressure"))
+
