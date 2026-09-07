@@ -1,0 +1,490 @@
+UPI-SHIELD
+Complete Hackathon Documentation Pack
+CC-GFG-02 — Contextual Digital Payment Scam & Coercion Detector
+Career Catalyst Club × GeeksforGeeks — 4-Hour Software Hackathon
+Document Set
+01 Project Overview
+02 PRD
+03 SRS
+04 TRD
+05 System Architecture
+06 Test Plan
+07 Security Privacy
+08 4 Hour Execution Plan
+09 Demo Plan
+10 Backlog Roadmap
+11 README
+Source Basis and Scope
+The official hackathon PDF defines UPI-Shield as a Beginner / Fintech Security & NLP problem. Its required mission is to ingest SMS/WhatsApp/payment-note text, detect urgency markers and unauthorized authority claims, and output a Threat Meter with English/Hindi safety warnings. The official MVP is an end-to-end web application; OCR from mobile screenshots and UPI intent parsing are listed as bonus features.
+The remaining architecture, thresholds, API schemas, scoring weights, test cases, security controls, and roadmap in this pack are proposed engineering decisions for a practical 4-hour implementation; they are not stated as official organizer requirements.
+01 Project Overview
+UPI-Shield — Project Overview
+1. Project Identity
+**Project:** UPI-Shield  
+**Official Problem:** CC-GFG-02 — Contextual Digital Payment Scam & Coercion Detector  
+**Hackathon:** Career Catalyst Club × GeeksforGeeks — 4-Hour Software Hackathon  
+**Theme:** Fintech Security & NLP  
+**Official Difficulty:** Beginner
+2. Problem
+Users can be manipulated into voluntarily authorizing fraudulent UPI transactions. Traditional authentication can verify the user, but may not identify psychological deception or coercion.
+3. Proposed Solution
+UPI-Shield analyzes SMS, WhatsApp-style messages, and payment notes for contextual scam indicators such as urgency, threats, authority claims, payment pressure, credential requests, and reward/cashback manipulation.
+4. Core Output
+Threat score
+Risk level
+Detected indicators
+Human-readable explanation
+English safety guidance
+Hindi safety guidance
+5. MVP
+1. Message ingestion
+2. Semantic/NLP analysis
+3. Urgency and authority-claim detection
+4. Threat scoring
+5. Explainable result
+6. English/Hindi safety warning
+6. Optional Bonus
+Screenshot OCR
+UPI intent parsing (`upi://pay?...`)
+Suspicious URL analysis
+Demo history
+Exportable risk report
+7. Success Definition
+A judge can paste a scam message, click Analyze, and within seconds see a defensible risk score, the reasons for the decision, and bilingual safety advice.
+**Source basis:** Official hackathon document, pages 4–5 / lines 57–88.
+02 PRD
+UPI-Shield — Product Requirements Document (PRD)
+1. Product Goal
+Create a lightweight, explainable scam/coercion detection assistant for digital-payment messages.
+2. Target Users
+Digital-payment users
+Students and families
+Non-technical users
+Demonstration/judging audience
+3. User Stories
+As a user, I want to paste a suspicious message and know its risk level.
+As a user, I want to understand why the message is suspicious.
+As a Hindi-speaking user, I want the warning in Hindi.
+As a user, I want to analyze a screenshot of a suspicious message (bonus).
+As a user, I want payment context such as a UPI intent analyzed (bonus).
+4. Functional Requirements
+FR-01 Message Input
+Accept free-form message text.
+FR-02 Analysis
+Analyze semantic indicators including:
+urgency
+fear/threat
+authority impersonation
+payment pressure
+credential requests
+reward/cashback manipulation
+suspicious links/payment context
+FR-03 Threat Score
+Return a normalized 0–100 score.
+FR-04 Risk Level
+Suggested prototype mapping:
+0–30: Low
+31–60: Medium
+61–80: High
+81–100: Critical
+These thresholds are proposed implementation choices, not organizer requirements.
+FR-05 Explanation
+Return evidence categories and concise explanations.
+FR-06 Bilingual Guidance
+Generate English and Hindi safety guidance.
+FR-07 OCR (Bonus)
+Extract message text from uploaded screenshots.
+FR-08 UPI Intent Parsing (Bonus)
+Parse `upi://pay?...` fields where present.
+5. Non-Functional Requirements
+Analysis should feel near-real-time for demo use.
+UI must be understandable without technical knowledge.
+No real-money transaction should be initiated.
+Results should be explainable rather than a black-box label.
+6. Out of Scope
+Real bank integration
+Real UPI transaction execution
+WhatsApp account integration
+Production fraud blocking
+Financial decision-making
+User authentication
+Large-scale training infrastructure
+7. Acceptance Criteria
+A submission is MVP-complete when:
+1. Text can be entered.
+2. Analysis runs.
+3. Multiple contextual indicators are detected.
+4. A score and risk level are displayed.
+5. Reasons are shown.
+6. English/Hindi guidance is shown.
+7. The demo can process safe and scam examples reliably.
+03 SRS
+UPI-Shield — Software Requirements Specification (SRS)
+1. System Scope
+UPI-Shield is a prototype web application for contextual scam and coercion analysis of digital-payment-related messages.
+2. Actors
+User
+Analysis Engine
+Optional OCR Engine
+Optional Translation/LLM Service
+3. Main Use Case
+**UC-01: Analyze Message**
+1. User enters/pastes message.
+2. Client sends message to analyzer.
+3. Preprocessor normalizes text.
+4. NLP detector extracts risk signals.
+5. Risk engine calculates score.
+6. Explanation engine creates reasons.
+7. Guidance engine creates English/Hindi advice.
+8. UI renders result.
+4. Alternate Use Case
+**UC-02: Analyze Screenshot**
+1. User uploads screenshot.
+2. OCR extracts text.
+3. Extracted text enters UC-01.
+4. UI shows OCR + analysis.
+5. Data Model
+AnalysisRequest
+`message: string`
+`language_hint: string|null`
+`source_type: text|screenshot|upi_intent`
+AnalysisResponse
+`score: number`
+`risk_level: string`
+`indicators: object`
+`reasons: string[]`
+`recommendation_en: string`
+`recommendation_hi: string`
+`extracted_text: string|null`
+6. Reliability Requirements
+Do not claim certainty that a message is fraudulent.
+Use labels such as “High Risk” or “Suspicious”.
+Preserve the reasons that produced the score.
+Fail safely if an external AI/translation/OCR service is unavailable.
+7. Security Requirements
+Never ask the user to enter a real UPI PIN, OTP, CVV, password, or bank password.
+Do not execute payment instructions.
+Do not store sensitive message content by default.
+Sanitize uploaded files and limit size/type.
+04 TRD
+UPI-Shield — Technical Requirements / Technical Design Document (TRD)
+1. Recommended Stack
+Frontend
+**Streamlit** for fastest hackathon delivery.
+Core Language
+**Python 3.11+**
+NLP
+Hugging Face zero-shot classifier OR lightweight semantic classifier
+Optional LLM for explanation, not as the sole detector
+OCR
+EasyOCR or equivalent, optional
+Parsing
+Python URL/URI parsing for UPI intent
+Translation
+Google Translate-compatible service or LLM; cache/fallback where practical
+2. Proposed Architecture
+                 Streamlit UI
+                      |
+                      v
+                Analysis Controller
+                      |
+             +--------+--------+
+             |                 |
+             v                 v
+        Text Processor      OCR Processor
+             |                 |
+             +--------+--------+
+                      |
+                      v
+              Signal Detection
+                      |
+          +-----------+-----------+
+          |           |           |
+       Urgency     Authority    Payment
+       Threat      Claims       Context
+          |           |           |
+          +-----------+-----------+
+                      |
+                      v
+                Risk Scoring
+                      |
+          +-----------+-----------+
+          |                       |
+          v                       v
+      Explanation          Safety Guidance
+                                  |
+                            EN + HI output
+3. Detection Strategy
+Use a hybrid approach:
+1. Text normalization
+2. Semantic classification
+3. Optional deterministic patterns as supporting evidence
+4. Score aggregation
+5. Explanation generation
+Do NOT implement the official MVP as simple keyword equality. The organizer explicitly rejects trivial string matching.
+4. Proposed Scoring
+Example weights:
+Urgency: 20%
+Threat/fear: 20%
+Authority claim: 15%
+Payment pressure: 20%
+Credential request: 15%
+Reward/cashback manipulation: 10%
+Weights are proposed engineering choices and should be tuned against demo cases.
+5. API Contract
+POST `/api/analyze`
+Request:
+{
+  "message": "URGENT! Your electricity connection will be disconnected..."
+}
+Response:
+{
+  "score": 92,
+  "risk_level": "CRITICAL",
+  "indicators": {
+    "urgency": 0.95,
+    "threat": 0.90,
+    "authority": 0.70,
+    "payment": 0.96,
+    "credential": 0.10,
+    "reward": 0.00
+  },
+  "reasons": [
+    "Artificial urgency detected",
+    "Threat of service disconnection detected",
+    "Immediate payment pressure detected"
+  ],
+  "recommendation_en": "Do not pay until independently verified.",
+  "recommendation_hi": "भुगतान करने से पहले आधिकारिक स्रोत से सत्यापन करें।"
+}
+6. Performance Target
+For hackathon demo data, aim for sub-3-second perceived response time. This is a proposed target, not an organizer requirement.
+7. Failure Handling
+NLP unavailable → use local heuristic fallback
+Translation unavailable → predefined bilingual templates
+OCR unavailable → retain manual text input
+Invalid image → show validation error
+05 System Architecture
+UPI-Shield — System Architecture
+Logical Components
+1. Presentation Layer
+2. Input Processing Layer
+3. Detection Layer
+4. Risk Engine
+5. Explanation Layer
+6. Guidance Layer
+7. Optional OCR/UPI parser
+Data Flow
+User
+ ↓
+Message / Screenshot / UPI Intent
+ ↓
+Input Validation
+ ↓
+Text Extraction + Normalization
+ ↓
+Semantic Signal Detection
+ ↓
+Risk Aggregation
+ ↓
+Threat Score + Risk Level
+ ↓
+Explainable Findings
+ ↓
+English/Hindi Safety Guidance
+ ↓
+Dashboard
+Design Principle
+The system should explain *why* a message is risky. The primary output is not just “SCAM”; it is a contextual risk assessment.
+Deployment for Hackathon
+Recommended:
+Local machine
+Streamlit
+Optional FastAPI if the team wants a separated backend
+Optional hosted demo only after local stability is confirmed
+06 Test Plan
+UPI-Shield — Test Plan
+1. Unit Tests
+Text normalization
+Indicator scoring
+Risk threshold mapping
+UPI URI parsing
+JSON response validation
+2. Functional Tests
+Safe
+“Hey, I’ll send you the money tomorrow.”
+Expected: Low risk.
+Suspicious Reward
+“Your cashback expires today. Click the link to claim.”
+Expected: Elevated risk; reward/payment/link indicators.
+Threat + Payment
+“URGENT! Your electricity will be disconnected in 2 hours. Pay ₹2,999 immediately.”
+Expected: High/Critical risk; urgency + threat + payment pressure.
+Credential Request
+“Share your OTP to complete verification.”
+Expected: High risk; credential request.
+Authority Claim
+“I am calling from the bank security department. Transfer ₹10,000 now.”
+Expected: High risk; authority + urgency/payment.
+3. Negative Tests
+Empty message
+Very long message
+Non-ASCII/Hindi text
+Mixed Hindi-English
+Harmless use of words like “payment” without scam context
+4. Demo Acceptance
+Three prepared messages produce stable results.
+No crashes.
+Hindi output renders correctly.
+Explanation is understandable.
+Screenshot OCR, if enabled, works on at least one prepared image.
+5. Important Safety Test
+The system must never request or process a real UPI PIN/OTP/CVV as an input credential.
+07 Security Privacy
+UPI-Shield — Security & Privacy Notes
+Threats
+Prompt/input injection against the analysis model
+Malicious uploaded files
+Oversized screenshots
+Sensitive data leakage through logs
+External API failure
+False positives/false negatives
+Controls
+Validate input length/type.
+Restrict screenshot MIME types and size.
+Do not execute URLs or payment URIs.
+Escape UI-rendered text.
+Avoid logging raw user messages.
+Keep API keys in environment variables.
+Never hardcode secrets.
+Provide clear “risk assessment” language instead of claiming legal/fraud certainty.
+Privacy Principle
+The hackathon prototype should process the minimum data required for analysis and avoid persistent storage unless a demo feature explicitly requires it.
+08 4 Hour Execution Plan
+UPI-Shield — 4-Hour Execution Plan
+00:00–00:20 — Setup
+Create project
+Install dependencies
+Run Streamlit
+Create basic UI
+00:20–01:00 — Input + Core Pipeline
+Message input
+Validation
+Analysis function
+Result schema
+01:00–02:00 — Detection Engine
+Implement:
+urgency
+threat/fear
+authority claim
+payment pressure
+credential request
+reward/cashback
+02:00–02:30 — Risk Engine
+Score 0–100
+Risk bands
+Indicator breakdown
+02:30–03:00 — Explainability
+Why flagged
+Evidence categories
+Recommendation
+03:00–03:20 — Hindi
+Bilingual warning
+Fallback templates
+03:20–03:40 — One Bonus
+Preferred: screenshot OCR.
+If OCR becomes unstable, remove it.
+03:40–04:00 — Freeze + Demo
+Test 3 prepared messages
+Fix crashes
+Polish UI
+Rehearse 60–90 second demo
+Hard Rule
+Do not add major features after 03:40.
+09 Demo Plan
+UPI-Shield — 60–90 Second Demo Plan
+Opening — 10 seconds
+“UPI authentication can verify that a user authorized a payment, but it cannot always tell whether the user was manipulated into authorizing it.”
+Demo 1 — Safe
+Input:
+“Hey, I’ll send you ₹500 tomorrow.”
+Show:
+Low risk
+Low score
+No significant indicators
+Demo 2 — Scam
+Input:
+“URGENT! Your electricity connection will be disconnected today. Pay ₹2,999 immediately to avoid permanent disconnection.”
+Show:
+High/Critical score
+Urgency
+Threat
+Authority/payment context
+Recommendation
+Demo 3 — Bilingual
+Switch to Hindi and show a concise safety card.
+Optional Wow Moment
+Upload a WhatsApp/SMS screenshot:
+Screenshot → OCR → extracted message → same threat analysis.
+Closing
+“UPI-Shield is not only looking for scam words; it analyzes the context and social-engineering signals used to pressure a user into payment.”
+10 Backlog Roadmap
+UPI-Shield — Backlog & Roadmap
+P0 — Must Have
+Text input
+Semantic/contextual detection
+Threat score
+Risk level
+Explainable reasons
+English/Hindi warning
+Reliable demo cases
+P1 — Should Have
+Screenshot OCR
+UPI intent parsing
+URL signal extraction
+Downloadable report
+P2 — Future
+Browser/mobile share-sheet integration
+On-device inference
+Personalized risk preferences
+Scam campaign clustering
+Multi-language expansion
+Historical trend dashboard
+Integration with institutional fraud-awareness systems
+Not in Hackathon Scope
+Real transaction blocking
+Direct bank/UPI integration
+Production-grade fraud detection
+11 README
+UPI-Shield
+Contextual Digital Payment Scam & Coercion Detector
+Quick Start
+python -m venv .venv
+Windows
+.venv\Scripts\activate
+pip install -r requirements.txt
+streamlit run app.py
+Recommended Initial Dependencies
+streamlit
+transformers
+torch
+pydantic
+requests/httpx
+pillow
+easyocr (optional)
+Project Structure
+upi-shield/
+├── app.py
+├── requirements.txt
+├── .env.example
+├── src/
+│   ├── analyzer.py
+│   ├── scoring.py
+│   ├── explain.py
+│   ├── translate.py
+│   ├── ocr.py
+│   └── upi_parser.py
+├── tests/
+└── docs/
+MVP Rule
+Keep the first working version simple. Add OCR only after the text-to-result pipeline is stable.

@@ -1,0 +1,261 @@
+UPI-SHIELD
+Step-by-Step Development Roadmap
+AI-assisted development using Antigravity AI • 4-hour hackathon MVP
+1. Purpose of This Roadmap
+This roadmap converts the existing UPI-Shield PRD, SRS, TRD, architecture, workflow, flowchart, testing, security, and demo planning into an implementation sequence. The goal is to build the smallest reliable end-to-end product first, then add high-value features only after the core path works.
+The official MVP requires an end-to-end web application that processes text, detects deceptive triggers, and provides a Threat Meter with bilingual English/Hindi safety guidance.
+Antigravity AI should be used as the coding/development assistant, while you remain the product owner: verify every generated file, run the application, test outputs, and make the final engineering decisions.
+2. Development Strategy
+Build vertically, not feature-by-feature: get Input → Analyze → Score → Explain → Warn working first.
+Use Antigravity AI for scaffolding, implementation, refactoring, debugging, tests, and documentation.
+After every major task, run the application and verify the behavior before starting the next task.
+Do not begin with OCR, authentication, databases, WhatsApp integration, or deployment.
+Do not rely on trivial keyword/string matching; use multiple deception/risk signals.
+Keep all hackathon-critical functionality local and deterministic where possible.
+Treat external APIs and bonus features as optional layers, never as dependencies of the MVP.
+3. Target MVP Architecture
+Recommended implementation flow:
+User Input → Preprocessing → Detection Engine → Risk Scoring → Explanation → Bilingual Guidance → Results Dashboard
+Optional extensions:
+Screenshot → OCR → Extracted Text → Same Detection Pipeline
+UPI URI → Payment Intent Parser → Same Risk/Context Pipeline
+4. Step-by-Step Development Roadmap
+STEP 0 — Prepare the Development Environment
+Target time: 15–20 min
+Create the project folder/repository.
+Create and activate a Python virtual environment.
+Install the initial dependencies.
+Open the project in Antigravity AI.
+Confirm Python and Streamlit run correctly.
+Create a README and .env.example immediately.
+Done when: a minimal Streamlit page opens locally and the repository has a clean initial structure.
+STEP 1 — Create the Project Structure
+Target time: 10–15 min
+Create separate modules for UI, preprocessing, detection, scoring, explanations, guidance, and tests.
+Keep business logic outside the UI file.
+Create a sample-data directory for safe/scam test messages.
+Create a config/constants module for thresholds and weights.
+Create a services/adapters layer for optional external APIs.
+Done when: every core responsibility has a clear module and imports work without circular dependencies.
+STEP 2 — Build the Basic UI Shell
+Target time: 20–25 min
+Add application title and short safety disclaimer.
+Add a large message input area.
+Add Analyze button and Clear/Reset action.
+Add sample message buttons/dropdown for rapid demo.
+Create an empty results section.
+Make the layout usable on a normal laptop screen.
+Done when: a user can enter a message and trigger an analysis without errors.
+STEP 3 — Implement Text Preprocessing
+Target time: 15–20 min
+Normalize whitespace and casing where appropriate.
+Preserve the original message for display.
+Extract URLs if present.
+Detect phone numbers, UPI IDs, and payment-related patterns.
+Prepare normalized text for downstream analysis.
+Handle empty/very long/malformed input safely.
+Done when: preprocessing returns a predictable structured object and edge cases do not crash the app.
+STEP 4 — Build the Deception/Risk Signal Engine
+Target time: 30–40 min
+Implement generalized indicators for urgency/pressure.
+Detect threats, fear, or consequences.
+Detect authority impersonation patterns.
+Detect payment/refund/cashback pressure.
+Detect credential/security-action requests.
+Detect suspicious links or unusual payment context.
+Allow multiple indicators to be active at once.
+Return evidence/reason text for every triggered indicator.
+Done when: the same message can produce multiple meaningful signals with human-readable reasons.
+STEP 5 — Implement Risk Scoring
+Target time: 15–20 min
+Create a transparent scoring function.
+Combine the detected signals into a 0–100 risk score.
+Map the score to Low/Medium/High/Critical.
+Keep weights and thresholds configurable.
+Return a score breakdown so the UI can explain the result.
+Test boundary values explicitly.
+Done when: every analyzed message gets a reproducible score, level, and breakdown.
+STEP 6 — Build Explainability
+Target time: 15–20 min
+Generate a concise 'Why this was flagged' section.
+Show the specific indicators detected.
+Connect each indicator to evidence/reason text.
+Avoid unsupported claims such as 'this is definitely fraud'.
+Keep the explanation understandable to a non-technical user.
+Done when: a judge can immediately understand why a message received its score.
+STEP 7 — Add Bilingual Safety Guidance
+Target time: 15–20 min
+Create English safety guidance.
+Create Hindi safety guidance.
+Make the guidance depend on risk level.
+Include practical actions: pause, verify independently, do not share credentials, and avoid suspicious payment actions.
+Keep safety advice concise enough for the demo.
+Done when: High/Critical results visibly provide useful English + Hindi safety cards.
+STEP 8 — Integrate the Results Dashboard
+Target time: 20–25 min
+Add a prominent Threat Meter.
+Display risk score and risk level.
+Display detected indicators.
+Display explanation/evidence.
+Display English and Hindi guidance.
+Show extracted UPI/link context when available.
+Add a clean 'Analyze another message' flow.
+Done when: the complete MVP path works from one screen without manual intervention.
+STEP 9 — Add Semantic/ML Enhancement
+Target time: 20–30 min
+If time permits, add a lightweight semantic classifier or zero-shot model.
+Use it as an additional signal rather than replacing the transparent rules.
+Compare semantic results with the deterministic signal engine.
+Keep a fallback path if model loading fails.
+Do not allow a remote model/API failure to break the core demo.
+Done when: the system can recognize scam intent beyond exact keyword matching and still works without the enhancement.
+STEP 10 — Add UPI Intent Parsing (Bonus)
+Target time: 15–20 min
+Parse common upi://pay URI fields.
+Extract payee/VPA, amount, currency, and transaction note where available.
+Show the parsed context in the UI.
+Feed suspicious context into the risk explanation.
+Gracefully reject malformed URI input.
+Done when: a sample UPI intent can be parsed and displayed without affecting normal text analysis.
+STEP 11 — Add Screenshot OCR (Bonus)
+Target time: 25–35 min
+Add image upload.
+Run OCR on the screenshot.
+Show extracted text for transparency.
+Send extracted text through the exact same detection pipeline.
+Handle unreadable images and OCR failure gracefully.
+Done when: a screenshot can be uploaded and analyzed end-to-end.
+STEP 12 — Testing & False-Positive Tuning
+Target time: 25–35 min
+Create safe messages that should remain Low Risk.
+Create realistic scam/deception messages with different patterns.
+Test mixed Hindi-English/Hinglish where feasible.
+Test short, long, empty, malformed, and URL-heavy inputs.
+Check that multiple indicators combine correctly.
+Tune thresholds only after observing test results.
+Record known limitations.
+Done when: the core demo cases are stable and no obvious UI/runtime failures remain.
+STEP 13 — Demo Hardening
+Target time: 15–20 min
+Preload 3–5 demo messages.
+Make the strongest scam scenario produce a clear High/Critical result.
+Ensure the Hindi safety card appears correctly.
+Remove debug prints and temporary UI.
+Add a short 'How it works' section.
+Confirm the app starts from a clean environment.
+Done when: another person can open the app and understand the value in under one minute.
+STEP 14 — Final Packaging
+Target time: 10–15 min
+Freeze the MVP feature set.
+Update README with setup and run commands.
+Update requirements.txt.
+Check .env.example.
+Run the final smoke test.
+Commit the working version.
+Prepare the final presentation/demo sequence.
+Done when: the repository can be cloned, installed, launched, and demonstrated reliably.
+5. Recommended Antigravity AI Workflow
+Use Antigravity AI in short, controlled development loops:
+1. PLAN — Give Antigravity one clearly scoped task.
+2. IMPLEMENT — Ask it to create/modify only the required files.
+3. RUN — Start the application or tests.
+4. INSPECT — Read errors/output yourself.
+5. FIX — Give the exact error to Antigravity and ask for the smallest safe fix.
+6. VERIFY — Retest the original feature plus a regression case.
+7. COMMIT — Save a known-working checkpoint before the next major feature.
+6. Antigravity AI Prompt Template
+Use this template for each implementation task. Replace the bracketed sections:
+You are developing UPI-Shield, a hackathon MVP for contextual digital-payment scam and coercion detection.
+TASK: [one task only]
+CURRENT STATE: [what already works]
+FILES TO CHANGE: [specific files]
+REQUIREMENTS: [acceptance criteria]
+CONSTRAINTS: Keep the architecture modular; do not break existing behavior; do not use trivial exact-string matching as the sole detector; keep external services optional.
+Before coding, inspect the existing project. Then implement the smallest complete change. Run the relevant tests/application after editing. Report files changed, commands run, results, and any remaining issue.
+7. What NOT to Ask Antigravity to Do
+Do not ask it to 'build the entire project' in one prompt.
+Do not let it rewrite the whole repository to fix one small bug.
+Do not accept generated code without running it.
+Do not add a database unless a real requirement emerges.
+Do not make an LLM/API mandatory for the core risk decision.
+Do not replace explainable detection with a black-box yes/no answer.
+Do not spend the hackathon on UI animations or deployment before the MVP works.
+8. 4-Hour Hackathon Execution Plan
+Time
+Focus
+Must Have
+Skip If Behind
+0:00–0:20
+Environment + structure
+Project runs
+Extra setup
+0:20–0:45
+UI shell
+Input + Analyze
+Visual polish
+0:45–1:25
+Detection engine
+Risk signals
+ML enhancement
+1:25–1:45
+Scoring
+0–100 + level
+Advanced calibration
+1:45–2:10
+Explainability + guidance
+Reasons + EN/HI
+LLM explanations
+2:10–2:35
+Dashboard
+Threat Meter
+Animations
+2:35–3:05
+Testing/tuning
+Safe + scam cases
+Rare edge cases
+3:05–3:35
+Bonus
+UPI parser OR OCR
+Do not attempt both if core is unstable
+3:35–4:00
+Demo hardening
+Reliable live demo
+New features
+9. Definition of Done — MVP
+☐ User can enter a message.
+☐ Application analyzes the message without crashing.
+☐ Multiple deception indicators can be detected.
+☐ Risk score is between 0 and 100.
+☐ Risk level is shown.
+☐ Reasons for the score are visible.
+☐ English safety guidance is visible.
+☐ Hindi safety guidance is visible.
+☐ At least one safe message behaves differently from a scam message.
+☐ The implementation is not based solely on exact keyword matching.
+☐ The core path works without optional OCR/API integrations.
+☐ README and requirements are updated.
+10. Definition of Done — Bonus
+☐ UPI intent URI parsing works.
+☐ Screenshot OCR works.
+☐ Semantic/ML signal works with a fallback.
+☐ Sample messages can be launched from the UI.
+☐ Test suite covers scoring boundaries and major signal combinations.
+11. Final Demo Sequence
+Start with one normal/benign message and show a Low result.
+Paste a realistic scam message using urgency/threat/authority/payment pressure.
+Click Analyze.
+Show the Threat Meter and risk level.
+Point to the detected indicators and explain why they matter.
+Show the Hindi safety guidance.
+If stable, demonstrate UPI intent parsing or OCR as the bonus.
+End with the key value proposition: the system helps users pause and recognize deceptive payment pressure before acting.
+12. Engineering Principles for This Hackathon
+Working prototype > documentation polish.
+Reliable core flow > number of features.
+Explainable risk > unexplained AI score.
+Generalizable signals > exact string matching.
+Fast recovery > over-engineering.
+Demo reliability > experimental features.
+13. Source Basis
+The hackathon-specific MVP scope in this roadmap is based on the uploaded official Career Catalyst Club × GeeksforGeeks problem-statement document, especially CC-GFG-02 UPI-Shield. The engineering sequence, module boundaries, timing allocations, and Antigravity workflow are implementation recommendations for executing that scope.
+Official problem statement reference: UPI-Shield is described as a contextual digital payment scam/coercion detector; its MVP calls for an end-to-end web app, deceptive-trigger detection, Threat Meter, and bilingual English/Hindi safety cards.

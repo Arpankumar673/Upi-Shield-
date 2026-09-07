@@ -1,0 +1,615 @@
+UPI-SHIELD — WORKFLOW & FLOWCHART PACK
+CC-GFG-02 | Career Catalyst Club × GeeksforGeeks 4-Hour Hackathon
+Included Artifacts
+Complete Workflows
+Flowchart Specifications
+Sequence Diagrams
+Data Flow Diagrams
+State / Decision Flow
+Complete Workflows
+1. Master End-to-End Workflow
+USER
+  |
+  v
+[Select Input Type]
+  |---- Text / SMS / WhatsApp message
+  |---- Screenshot (OCR bonus)
+  |---- UPI Intent (bonus)
+  |
+  v
+[Input Validation]
+  |
+  v
+[Text Extraction / Normalization]
+  |
+  v
+[Context & Signal Analysis]
+  |
+  +--> Urgency
+  +--> Threat / Fear
+  +--> Authority Claim
+  +--> Payment Pressure
+  +--> Credential Request
+  +--> Reward / Cashback
+  +--> Suspicious URL / Payment Context
+  |
+  v
+[Risk Scoring Engine]
+  |
+  v
+[Risk Classification]
+  |---- LOW
+  |---- MEDIUM
+  |---- HIGH
+  |---- CRITICAL
+  |
+  v
+[Explainability Engine]
+  |
+  +--> Detected indicators
+  +--> Evidence/reasons
+  +--> Risk explanation
+  |
+  v
+[Safety Guidance Generator]
+  |
+  +--> English
+  +--> Hindi
+  |
+  v
+[Result Dashboard]
+  |
+  +--> Threat Meter
+  +--> Risk Level
+  +--> Indicators
+  +--> Explanation
+  +--> Recommendation
+The official MVP requires message ingestion, NLP detection of urgency/unauthorized authority claims, a Threat Meter, and English/Hindi safety warnings. OCR and UPI intent parsing are bonus features.
+---
+2. Text/SMS/WhatsApp Workflow
+Paste Message
+     |
+     v
+Validate Input
+     |
+     v
+Normalize Text
+(lowercase, whitespace, URL extraction)
+     |
+     v
+Semantic Analysis
+     |
+     +--> Urgency Score
+     +--> Threat Score
+     +--> Authority Score
+     +--> Payment Score
+     +--> Credential Score
+     +--> Reward Score
+     |
+     v
+Aggregate Risk Score
+     |
+     v
+Risk Level
+     |
+     v
+Generate Reasons
+     |
+     v
+Generate EN + HI Safety Guidance
+     |
+     v
+Display Result
+Expected result
+The user should see not just “scam/not scam”, but a contextual explanation.
+---
+3. Screenshot OCR Workflow — Bonus
+Upload Screenshot
+       |
+       v
+File Validation
+       |
+       v
+OCR Engine
+       |
+       v
+Extracted Text
+       |
+       v
+Text Normalization
+       |
+       v
+Core NLP Pipeline
+       |
+       v
+Threat Score
+       |
+       v
+Explainable Findings
+       |
+       v
+English + Hindi Warning
+Failure path
+Invalid / unreadable image
+          |
+          v
+OCR failure
+          |
+          v
+Show error + offer manual text input
+---
+4. UPI Intent Workflow — Bonus
+UPI Intent
+upi://pay?pa=...&pn=...&am=...
+             |
+             v
+Parse URI
+             |
+      +------+------+
+      |             |
+      v             v
+Payee/Handle     Amount
+      |             |
+      +------+------+
+             |
+             v
+Combine with message context
+             |
+             v
+Risk Analysis
+             |
+             v
+Threat Score + Explanation
+Do not execute the URI or initiate a transaction.
+---
+5. NLP Detection Workflow
+Raw Text
+   |
+   v
+Preprocessing
+   |
+   +--> Language/mixed-language handling
+   +--> URL extraction
+   +--> Amount extraction
+   +--> Sentence segmentation
+   |
+   v
+Semantic Classifiers
+   |
+   +--> urgency
+   +--> fear/threat
+   +--> authority impersonation
+   +--> payment pressure
+   +--> credential request
+   +--> reward/cashback
+   |
+   v
+Indicator Vector
+   |
+   v
+Risk Engine
+The official document requires semantic/generalizable analysis rather than trivial checks such as searching for a single word.
+---
+6. Risk Scoring Workflow
+Proposed prototype weights:
+Urgency             20%
+Threat/Fear         20%
+Authority Claim     15%
+Payment Pressure    20%
+Credential Request  15%
+Reward/Cashback     10%
+                    ----
+                    100%
+Indicator Scores
+      |
+      v
+Weighted Aggregation
+      |
+      v
+0–100 Risk Score
+      |
+      v
++------------------------------+
+| 0–30   LOW                   |
+| 31–60  MEDIUM                |
+| 61–80  HIGH                  |
+| 81–100 CRITICAL              |
++------------------------------+
+These weights and thresholds are proposed implementation choices, not official organizer thresholds.
+---
+7. Explainability Workflow
+Risk Score
+    |
+    v
+Which indicators contributed?
+    |
+    +--> Urgency
+    +--> Threat
+    +--> Authority
+    +--> Payment
+    +--> Credential
+    +--> Reward
+    |
+    v
+Generate human-readable reasons
+    |
+    v
+Generate recommended action
+Example:
+HIGH RISK — 91/100
+Why?
+✓ Artificial urgency detected
+✓ Threat of service suspension detected
+✓ Immediate payment pressure detected
+✓ Authority claim detected
+Recommendation:
+Do not pay until independently verified through
+an official channel.
+---
+8. Bilingual Guidance Workflow
+Risk Result
+    |
+    v
+Safety Recommendation
+    |
+    +------------------+
+    |                  |
+    v                  v
+English              Hindi
+    |                  |
+    +--------+---------+
+             |
+             v
+      Safety Card
+Keep Hindi guidance concise and actionable.
+---
+9. UI Workflow
+Screen 1 — Home
+UPI-SHIELD
+Contextual Payment Scam Detector
+[ Message ]
+[ Screenshot ]
+[ UPI Intent ]
+             [ ANALYZE ]
+Screen 2 — Analysis
+Analyzing...
+Extracting context...
+Detecting social-engineering signals...
+Calculating risk...
+Screen 3 — Result
+🔴 HIGH RISK
+91 / 100
+Threat Meter
+██████████████████░░
+Detected:
+✓ Urgency
+✓ Threat
+✓ Authority claim
+✓ Payment pressure
+[ English ] [ हिन्दी ]
+Safety Recommendation
+...
+---
+10. Error Handling Workflow
+User Input
+   |
+   +--> Empty? ------> Validation Error
+   |
+   +--> Too Large? --> Validation Error
+   |
+   +--> Invalid File? -> File Error
+   |
+   v
+Analysis
+   |
+   +--> External service unavailable
+   |         |
+   |         v
+   |    Local fallback / template
+   |
+   v
+Result
+The application should fail gracefully and preserve the working core demo.
+---
+11. Complete Component Interaction
+                 +----------------+
+                 |   Streamlit UI |
+                 +-------+--------+
+                         |
+                         v
+                 +---------------+
+                 | Input Handler |
+                 +-------+-------+
+                         |
+              +----------+----------+
+              |                     |
+              v                     v
+        Text Processor          OCR Processor
+              |                     |
+              +----------+----------+
+                         |
+                         v
+                +------------------+
+                | Signal Detection |
+                +--------+---------+
+                         |
+                         v
+                +------------------+
+                |  Risk Engine     |
+                +--------+---------+
+                         |
+                         v
+                +------------------+
+                | Explainability   |
+                +--------+---------+
+                         |
+                         v
+                +------------------+
+                | Guidance Engine  |
+                +--------+---------+
+                         |
+                         v
+                 +---------------+
+                 | Result UI     |
+                 +---------------+
+---
+12. Hackathon Execution Workflow
+00:00–00:20  Project setup + UI shell
+00:20–01:00  Input + analysis pipeline
+01:00–02:00  Detection engine
+02:00–02:30  Risk scoring
+02:30–03:00  Explainability
+03:00–03:20  Hindi guidance
+03:20–03:40  OCR bonus if stable
+03:40–04:00  Testing + demo rehearsal
+Freeze rule
+At 03:40, stop adding features. Fix bugs and rehearse.
+Flowchart Specifications
+Flowchart A — Main Application
+[START]
+   |
+   v
+[Choose Input]
+   |
+   v
+{Input Type?}
+ /    |     \
+Text Screenshot UPI Intent
+ |       |       |
+ |       v       v
+ |     [OCR]  [Parse URI]
+ |       |       |
+ +-------+-------+
+         |
+         v
+[Validate / Normalize]
+         |
+         v
+[Semantic Signal Detection]
+         |
+         v
+[Calculate Threat Score]
+         |
+         v
+{Risk Level}
+ /    |      |      \
+LOW MEDIUM  HIGH  CRITICAL
+ |     |      |      |
+ +-----+------+------+
+         |
+         v
+[Generate Explanation]
+         |
+         v
+[Generate EN + HI Guidance]
+         |
+         v
+[Render Dashboard]
+         |
+         v
+       [END]
+Flowchart B — Detection Engine
+[Raw Message]
+      |
+      v
+[Normalize]
+      |
+      v
+[Extract Context]
+      |
+      +--> [Urgency]
+      |
+      +--> [Threat/Fear]
+      |
+      +--> [Authority Claim]
+      |
+      +--> [Payment Pressure]
+      |
+      +--> [Credential Request]
+      |
+      +--> [Reward/Cashback]
+      |
+      +--> [URL/UPI Context]
+      |
+      v
+[Indicator Vector]
+      |
+      v
+[Risk Aggregator]
+      |
+      v
+[Score 0–100]
+Flowchart C — Risk Decision
+[Risk Score]
+     |
+     v
+< 31 ? ---- YES ---> [LOW]
+  |
+ NO
+  v
+< 61 ? ---- YES ---> [MEDIUM]
+  |
+ NO
+  v
+< 81 ? ---- YES ---> [HIGH]
+  |
+ NO
+  v
+[CRITICAL]
+Flowchart D — Screenshot
+[Upload]
+   |
+   v
+[Validate File]
+   |
+   v
+{Valid?}
+ /    \
+No    Yes
+ |      |
+ v      v
+[Error] [OCR]
+          |
+          v
+     {Text Found?}
+       /      \
+     No        Yes
+     |          |
+     v          v
+  [Manual] [NLP Pipeline]
+     |          |
+     +----------+
+          |
+          v
+       [Result]
+Flowchart E — Explainability
+[Score + Indicators]
+       |
+       v
+[Rank Contributing Signals]
+       |
+       v
+[Generate Reasons]
+       |
+       v
+[Generate Recommendation]
+       |
+       v
+[EN + HI Safety Card]
+Flowchart F — Security Boundary
+[User Input]
+     |
+     v
+[Validation]
+     |
+     v
+[Sandboxed Analysis]
+     |
+     +--> NEVER execute URLs
+     +--> NEVER execute UPI URI
+     +--> NEVER request PIN/OTP/CVV
+     +--> Do not persist raw messages by default
+     |
+     v
+[Safe Result]
+Sequence Diagrams
+Sequence 1 — Text Analysis
+User -> UI: Paste message
+UI -> Analyzer: Analyze(message)
+Analyzer -> Preprocessor: Normalize
+Preprocessor -> Detector: Extract signals
+Detector -> RiskEngine: Indicator scores
+RiskEngine -> Explainer: Score + indicators
+Explainer -> Guidance: Recommendation
+Guidance -> UI: EN + HI result
+UI -> User: Threat dashboard
+Sequence 2 — Screenshot
+User -> UI: Upload screenshot
+UI -> OCR: Extract text
+OCR -> UI: Text
+UI -> Analyzer: Analyze(text)
+Analyzer -> RiskEngine: Score
+RiskEngine -> UI: Result
+UI -> User: Threat dashboard
+Sequence 3 — UPI Intent
+User -> UI: Paste UPI intent
+UI -> Parser: Parse URI
+Parser -> Analyzer: Payment context
+Analyzer -> RiskEngine: Risk
+RiskEngine -> UI: Score + reasons
+UI -> User: Warning
+Data Flow Diagrams
+Level 0 — Context
+              +----------------+
+              |      USER      |
+              +-------+--------+
+                      |
+                Message/Image
+                      |
+                      v
+             +------------------+
+             |    UPI-SHIELD    |
+             | Scam Risk Engine |
+             +--------+---------+
+                      |
+             Risk + Explanation
+             + English/Hindi
+                      |
+                      v
+              +---------------+
+              |      USER     |
+              +---------------+
+Level 1
+P1 Input Handler
+      |
+      v
+P2 Text/OCR Processor
+      |
+      v
+P3 Signal Detector
+      |
+      v
+P4 Risk Engine
+      |
+      v
+P5 Explanation + Guidance
+      |
+      v
+P6 Dashboard
+Data Stores
+For the 4-hour MVP, persistent storage is optional and should be avoided unless needed. If history is added, store only minimal metadata and avoid raw sensitive content by default.
+State / Decision Flow
+[IDLE]
+  |
+  | user submits input
+  v
+[VALIDATING]
+  |
+  | valid
+  v
+[ANALYZING]
+  |
+  | analysis complete
+  v
+[SCORING]
+  |
+  v
+[CLASSIFIED]
+  |
+  +--> LOW
+  +--> MEDIUM
+  +--> HIGH
+  +--> CRITICAL
+  |
+  v
+[EXPLAINING]
+  |
+  v
+[GUIDANCE_READY]
+  |
+  v
+[DISPLAYED]
+  |
+  | new input
+  v
+[IDLE]
