@@ -18,12 +18,17 @@ MAX_IMAGE_SIZE_BYTES = 10 * 1024 * 1024  # 10 MB
 ALLOWED_MIME_TYPES = ["image/png", "image/jpeg", "image/jpg", "image/webp"]
 
 
+import time
+
 class OCRResult(BaseModel):
     success: bool = False
     extracted_text: str = ""
     confidence: float = 0.0
     error: Optional[str] = None
     char_count: int = 0
+    process_time_ms: float = 0.0
+    preprocess_time_ms: float = 0.0
+    ocr_time_ms: float = 0.0
 
 
 class OCREngine:
@@ -33,6 +38,7 @@ class OCREngine:
         self.max_size_bytes = max_size_bytes
 
     def extract_text_from_bytes(self, image_bytes: bytes, mime_type: Optional[str] = None) -> OCRResult:
+        t_start = time.time()
         if not image_bytes:
             return OCRResult(success=False, error="No image file provided.")
 
@@ -48,12 +54,13 @@ class OCREngine:
                 error=f"Unsupported image format '{mime_type}'. Supported formats: PNG, JPG, JPEG, WEBP."
             )
 
+        t_prep_start = time.time()
         try:
             # Single-pass image load & validation
             image = Image.open(io.BytesIO(image_bytes))
             
-            # Fast proportion-preserving downscale if image exceeds max dimension (1200px)
-            max_dim = 1200
+            # Fast proportion-preserving downscale if image exceeds max dimension (1600px)
+            max_dim = 1600
             w, h = image.size
             if max(w, h) > max_dim:
                 scale = max_dim / float(max(w, h))
@@ -63,6 +70,7 @@ class OCREngine:
             
             # Convert to grayscale to speed up Tesseract text segmentation
             image = image.convert("L")
+            t_prep_end = time.time()
 
         except Exception:
             return OCRResult(
@@ -76,28 +84,42 @@ class OCREngine:
                 error="pytesseract package is not installed in the environment."
             )
 
+        t_ocr_start = time.time()
         try:
-            # Perform optimized OCR in-memory using uniform block PSM 6
-            extracted_text = pytesseract.image_to_string(image, config="--psm 6")
+            # Fast single-pass OCR in-memory with tessedit_do_invert=0 to skip redundant inversion search
+            fast_config = "--psm 6 -c tessedit_do_invert=0"
+            extracted_text = pytesseract.image_to_string(image, config=fast_config)
             cleaned = extracted_text.strip()
 
-            # Fallback to default PSM if PSM 6 produced empty output
+            # Single fallback to PSM 3 with tessedit_do_invert=0 if PSM 6 produced empty output
             if not cleaned:
-                extracted_text = pytesseract.image_to_string(image)
+                fallback_config = "--psm 3 -c tessedit_do_invert=0"
+                extracted_text = pytesseract.image_to_string(image, config=fallback_config)
                 cleaned = extracted_text.strip()
+
+            t_ocr_end = time.time()
+            total_ms = (t_ocr_end - t_start) * 1000.0
+            prep_ms = (t_prep_end - t_prep_start) * 1000.0
+            ocr_ms = (t_ocr_end - t_ocr_start) * 1000.0
 
             if not cleaned:
                 return OCRResult(
                     success=False,
                     extracted_text="",
-                    error="No readable text could be extracted from the screenshot image."
+                    error="No readable text could be extracted from the screenshot image.",
+                    process_time_ms=round(total_ms, 2),
+                    preprocess_time_ms=round(prep_ms, 2),
+                    ocr_time_ms=round(ocr_ms, 2)
                 )
 
             return OCRResult(
                 success=True,
                 extracted_text=cleaned,
                 confidence=0.85,
-                char_count=len(cleaned)
+                char_count=len(cleaned),
+                process_time_ms=round(total_ms, 2),
+                preprocess_time_ms=round(prep_ms, 2),
+                ocr_time_ms=round(ocr_ms, 2)
             )
 
         except pytesseract.TesseractNotFoundError:

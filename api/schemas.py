@@ -56,3 +56,4 @@ class ImageAnalysisResponse(BaseModel):
     extracted_text: str = ""
     ocr_error: Optional[str] = None
     risk_analysis: Optional[AnalysisResponse] = None
+    process_time_ms: Optional[float] = None

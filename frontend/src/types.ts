@@ -54,4 +54,5 @@ export interface ImageAnalysisResponse {
   extracted_text: string;
   ocr_error?: string;
   risk_analysis?: AnalysisResponse;
+  process_time_ms?: number;
 }

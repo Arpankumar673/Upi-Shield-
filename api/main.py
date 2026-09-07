@@ -176,6 +176,7 @@ async def analyze_image(file: UploadFile = File(...)):
             extracted_text=ocr_res.extracted_text,
             ocr_error=ocr_res.error,
             risk_analysis=risk_analysis,
+            process_time_ms=ocr_res.process_time_ms,
         )
 
     except Exception as e:

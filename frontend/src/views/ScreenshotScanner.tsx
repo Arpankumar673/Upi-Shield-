@@ -201,7 +201,9 @@ export default function ScreenshotScanner() {
                     : 'bg-amber-50 text-amber-700 border border-amber-200'
                 }`}
               >
-                {result.ocr_success ? 'OCR Engine: Active' : 'OCR Engine: Unavailable / Fallback'}
+                {result.ocr_success 
+                  ? `OCR Engine: Active ${result.process_time_ms ? `(${(result.process_time_ms / 1000).toFixed(2)}s)` : ''}` 
+                  : 'OCR Engine: Unavailable / Fallback'}
               </span>
             </div>
 
