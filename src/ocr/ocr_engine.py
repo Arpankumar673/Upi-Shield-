@@ -59,8 +59,8 @@ class OCREngine:
             # Single-pass image load & validation
             image = Image.open(io.BytesIO(image_bytes))
             
-            # Fast proportion-preserving downscale if image exceeds max dimension (1600px)
-            max_dim = 1600
+            # Fast proportion-preserving downscale if image exceeds max dimension (1000px)
+            max_dim = 1000
             w, h = image.size
             if max(w, h) > max_dim:
                 scale = max_dim / float(max(w, h))
@@ -86,16 +86,10 @@ class OCREngine:
 
         t_ocr_start = time.time()
         try:
-            # Fast single-pass OCR in-memory with tessedit_do_invert=0 to skip redundant inversion search
-            fast_config = "--psm 6 -c tessedit_do_invert=0"
+            # Fast single-pass OCR in-memory with PSM 3 (auto layout) and tessedit_do_invert=0
+            fast_config = "--psm 3 -c tessedit_do_invert=0"
             extracted_text = pytesseract.image_to_string(image, config=fast_config)
             cleaned = extracted_text.strip()
-
-            # Single fallback to PSM 3 with tessedit_do_invert=0 if PSM 6 produced empty output
-            if not cleaned:
-                fallback_config = "--psm 3 -c tessedit_do_invert=0"
-                extracted_text = pytesseract.image_to_string(image, config=fallback_config)
-                cleaned = extracted_text.strip()
 
             t_ocr_end = time.time()
             total_ms = (t_ocr_end - t_start) * 1000.0
